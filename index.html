@@ -62,6 +62,16 @@
 		canvas#fxCanvas { z-index: 1; }
 		canvas#confettiCanvas { z-index: 8; }
 
+		#bgMusic {
+			position: fixed;
+			left: -9999px;
+			top: -9999px;
+			width: 1px;
+			height: 1px;
+			opacity: 0;
+			pointer-events: none;
+		}
+
 		.intro {
 			position: fixed;
 			inset: 0;
@@ -366,8 +376,8 @@
 
 		.hero h1 {
 			margin: 0;
-			font-size: clamp(3.2rem, 8vw, 7.8rem);
-			line-height: 0.95;
+			font-size: clamp(2.2rem, 5vw, 5.4rem);
+			line-height: 0.88;
 			letter-spacing: -0.04em;
 			text-transform: uppercase;
 			text-shadow:
@@ -795,6 +805,10 @@
 		}
 
 		@media (max-width: 700px) {
+			.hero h1 {
+				font-size: clamp(1.75rem, 8.5vw, 3.35rem);
+			}
+
 			.intro-content {
 				width: min(96vw, 420px);
 				padding: 8px;
@@ -880,6 +894,9 @@
 <body>
 	<canvas id="fxCanvas"></canvas>
 	<canvas id="confettiCanvas"></canvas>
+	<audio id="bgMusic" autoplay loop preload="auto" aria-hidden="true">
+		<source src="Tu%20Cumplea.mp3" type="audio/mpeg" />
+	</audio>
 
 	<section class="intro" id="intro">
 		<div class="intro-content">
@@ -1170,6 +1187,7 @@
 		let appReady = false;
 		let musicActive = false;
 		let audioCtx;
+		const bgMusic = document.getElementById('bgMusic');
 		let synthNodes = [];
 		let particles = [];
 		let confetti = [];
@@ -1378,59 +1396,30 @@
 
 		function startAmbientMusic() {
 			if (musicActive) return;
-			const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
-			if (!AudioContextCtor) {
-				showToast('Tu navegador no admite música generada, así que el glamour tocará en silencio.');
+			bgMusic.load();
+			bgMusic.currentTime = 0;
+			const playback = bgMusic.play();
+			if (playback && typeof playback.catch === 'function') {
+				playback.then(() => {
+					musicActive = true;
+					musicToggle.textContent = 'Desactivar música';
+					showToast('Música local activada.');
+				}).catch(() => {
+					showToast('El navegador bloqueó el audio. Prueba otra vez con un clic.');
+				});
 				return;
 			}
-			audioCtx = audioCtx || new AudioContextCtor();
-			audioCtx.resume?.();
-			const master = audioCtx.createGain();
-			master.gain.value = 0.045;
-			master.connect(audioCtx.destination);
-
-			const chord = [220, 277.18, 329.63, 440];
-			synthNodes = chord.map((freq, index) => {
-				const osc = audioCtx.createOscillator();
-				const gain = audioCtx.createGain();
-				osc.type = index % 2 ? 'sine' : 'triangle';
-				osc.frequency.value = freq;
-				gain.gain.value = 0.0001;
-				osc.connect(gain).connect(master);
-				osc.start();
-				return { osc, gain };
-			});
-
 			musicActive = true;
-			const breathe = () => {
-				if (!musicActive || !audioCtx) return;
-				const now = audioCtx.currentTime;
-				synthNodes.forEach((node, index) => {
-					const target = 0.018 + index * 0.003;
-					node.gain.gain.cancelScheduledValues(now);
-					node.gain.gain.setTargetAtTime(target, now, 0.9 + index * 0.25);
-				});
-				setTimeout(breathe, 2200);
-			};
-			breathe();
-
 			musicToggle.textContent = 'Desactivar música';
-			showToast('Música ambiente premium activada.');
+			showToast('Música local activada.');
 		}
 
 		function stopAmbientMusic() {
 			if (!musicActive) return;
-			synthNodes.forEach((node) => {
-				try {
-					node.gain.gain.cancelScheduledValues(audioCtx.currentTime);
-					node.gain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.18);
-					node.osc.stop(audioCtx.currentTime + 0.25);
-				} catch (_) {}
-			});
-			synthNodes = [];
+			bgMusic.pause();
 			musicActive = false;
 			musicToggle.textContent = 'Activar música';
-			showToast('Música ambiente pausada.');
+			showToast('Música pausada.');
 		}
 
 		function finishIntro() {
@@ -1439,6 +1428,7 @@
 			document.body.classList.add('ready');
 			intro.classList.add('is-hidden');
 			setTimeout(() => intro.remove(), 1200);
+			startAmbientMusic();
 			burstConfetti(160);
 			showToast('Bienvenida triunfal activada.');
 			playSoftPop();
@@ -1626,6 +1616,11 @@
 		updateFakeStats();
 		startAutoQuotes();
 		tryStartVideo();
+		window.addEventListener('load', () => {
+			setTimeout(() => {
+				if (!musicActive) startAmbientMusic();
+			}, 350);
+		});
 		setInterval(() => {
 			if (!appReady) return;
 			updateFakeStats();
