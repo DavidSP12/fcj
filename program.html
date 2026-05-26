@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Feliz Cumpleaños 21</title>
+	<style>
+		:root {
+			--bg: #07070d;
+			--bg-2: #101018;
+			--panel: rgba(14, 14, 22, 0.72);
+			--panel-strong: rgba(18, 18, 28, 0.92);
+			--line: rgba(255, 255, 255, 0.12);
+			--text: #f6f3ff;
+			--muted: rgba(246, 243, 255, 0.74);
+			--gold: #f6d26b;
+			--pink: #ff7bd1;
+			--violet: #9a6bff;
+			--cyan: #79f4ff;
+			--shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
+			--radius: 28px;
+		}
+
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			margin: 0;
+			font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+			color: var(--text);
+			background:
+				radial-gradient(circle at top left, rgba(255, 123, 209, 0.16), transparent 28%),
+				radial-gradient(circle at top right, rgba(154, 107, 255, 0.18), transparent 22%),
+				radial-gradient(circle at bottom center, rgba(246, 210, 107, 0.14), transparent 24%),
+				linear-gradient(180deg, #05050a, #0d0d16 45%, #07070d);
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			background-image:
+				linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+			background-size: 54px 54px;
+			mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+			opacity: 0.55;
+			z-index: 0;
+		}
+
+		canvas#fxCanvas,
+		canvas#confettiCanvas {
+			position: fixed;
+			inset: 0;
+			width: 100vw;
+			height: 100vh;
+			pointer-events: none;
+		}
+
+		canvas#fxCanvas { z-index: 1; }
+		canvas#confettiCanvas { z-index: 8; }
+
+		.intro {
+			position: fixed;
+			inset: 0;
+			z-index: 50;
+			background: #020205;
+			display: grid;
+			place-items: center;
+			overflow: hidden;
+			transition: opacity 1s ease, transform 1s ease, filter 1s ease;
+		}
+
+		.intro::before,
+		.intro::after {
+			content: "";
+			position: absolute;
+			inset: -20%;
+			background:
+				radial-gradient(circle, rgba(255,255,255,0.1), transparent 34%),
+				radial-gradient(circle at 20% 30%, rgba(255, 123, 209, 0.3), transparent 22%),
+				radial-gradient(circle at 80% 20%, rgba(154, 107, 255, 0.28), transparent 20%),
+				radial-gradient(circle at 60% 80%, rgba(246, 210, 107, 0.18), transparent 22%);
+			filter: blur(18px);
+			animation: introPulse 8s ease-in-out infinite alternate;
+		}
+
+		.intro::after {
+			background:
+				linear-gradient(120deg, transparent 0 38%, rgba(255,255,255,0.2) 50%, transparent 62%),
+				linear-gradient(140deg, rgba(255,123,209,0.12), rgba(154,107,255,0.18), rgba(246,210,107,0.12));
+			mix-blend-mode: screen;
+			animation: introSweep 5s linear infinite;
+			opacity: 0.8;
+		}
+
+		.intro.is-hidden {
+			opacity: 0;
+			transform: scale(1.08);
+			filter: blur(14px);
+			pointer-events: none;
+		}
+
+		.intro-content {
+			position: relative;
+			z-index: 1;
+			width: min(92vw, 760px);
+			height: auto;
+			padding: 12px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.intro-content > * {
+			width: 100%;
+		}
+
+		.intro-video {
+			width: auto;
+			height: auto;
+			max-width: min(92vw, 760px);
+			max-height: min(62vh, 640px);
+			object-fit: contain;
+			background: #05050a;
+			border-radius: 24px;
+			border: 1px solid rgba(255, 255, 255, 0.18);
+			opacity: 0.92;
+			transform: translateY(-6px) scale(1);
+			filter: saturate(1.06) contrast(1.08);
+			box-shadow: 0 18px 60px rgba(0, 0, 0, 0.58), inset 0 0 0 1px rgba(255,255,255,0.06);
+			transition: transform 1.2s ease, opacity 1.2s ease, filter 1.2s ease;
+		}
+
+		.intro-overlay {
+			position: relative;
+			inset: auto;
+			display: grid;
+			place-items: center;
+			padding: 8px 18px 0;
+			background: transparent;
+			border-radius: 0;
+			order: 0;
+		}
+
+		.intro-video {
+			order: 1;
+		}
+
+		.intro-copy {
+			text-align: center;
+			max-width: 760px;
+			padding: 14px 18px;
+			border-radius: 24px;
+			background: rgba(0, 0, 0, 0.24);
+			backdrop-filter: blur(14px);
+			border: 1px solid rgba(255,255,255,0.08);
+			box-shadow: 0 18px 80px rgba(0,0,0,0.55);
+		}
+
+		.intro-kicker {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			letter-spacing: 0.22em;
+			text-transform: uppercase;
+			color: rgba(255,255,255,0.72);
+			font-size: 0.68rem;
+			margin-bottom: 10px;
+		}
+
+		.intro-kicker::before,
+		.intro-kicker::after {
+			content: "";
+			width: 34px;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+		}
+
+		.intro-title {
+			margin: 0;
+			font-size: clamp(2.1rem, 5.8vw, 5.2rem);
+			line-height: 0.92;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+			text-shadow: 0 0 20px rgba(255,255,255,0.16), 0 0 40px rgba(255,123,209,0.18);
+		}
+
+		.intro-subtitle {
+			margin: 12px auto 0;
+			color: rgba(255,255,255,0.84);
+			font-size: clamp(0.88rem, 1.7vw, 1.05rem);
+			max-width: 58ch;
+		}
+
+		.intro-skip {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			border: 1px solid rgba(255,255,255,0.18);
+			background: rgba(0,0,0,0.32);
+			color: white;
+			border-radius: 999px;
+			padding: 10px 16px;
+			cursor: pointer;
+			backdrop-filter: blur(12px);
+			transition: transform 0.2s ease, background 0.2s ease;
+		}
+
+		.intro-skip:hover { transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,0.08); }
+
+		.app {
+			position: relative;
+			z-index: 2;
+			opacity: 0;
+			transform: translateY(18px) scale(0.985);
+			transition: opacity 1s ease 0.15s, transform 1s ease 0.15s;
+			pointer-events: none;
+		}
+
+		body.ready .app {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+			pointer-events: auto;
+		}
+
+		.topbar {
+			position: sticky;
+			top: 0;
+			z-index: 20;
+			display: flex;
+			justify-content: center;
+			padding: 16px;
+			backdrop-filter: blur(18px);
+			background: linear-gradient(180deg, rgba(5,5,10,0.74), rgba(5,5,10,0.3));
+			border-bottom: 1px solid rgba(255,255,255,0.08);
+		}
+
+		.topbar-inner {
+			width: min(1180px, 100%);
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.brand-mark {
+			width: 42px;
+			height: 42px;
+			border-radius: 50%;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(255,123,209,0.94), rgba(154,107,255,0.96), rgba(246,210,107,0.92));
+			color: #110f18;
+			box-shadow: 0 0 0 6px rgba(255,255,255,0.05), 0 16px 50px rgba(154,107,255,0.28);
+		}
+
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.pill,
+		.btn {
+			border: 1px solid rgba(255,255,255,0.12);
+			background: rgba(255,255,255,0.05);
+			color: var(--text);
+			padding: 12px 16px;
+			border-radius: 999px;
+			cursor: pointer;
+			transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+			text-decoration: none;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			white-space: nowrap;
+			user-select: none;
+		}
+
+		.pill:hover,
+		.btn:hover {
+			transform: translateY(-2px);
+			border-color: rgba(246, 210, 107, 0.45);
+			background: rgba(255,255,255,0.09);
+			box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+		}
+
+		main {
+			width: min(1180px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 22px 0 90px;
+		}
+
+		.hero {
+			position: relative;
+			min-height: min(92vh, 980px);
+			display: grid;
+			align-items: center;
+			gap: 28px;
+			padding: 44px 0 24px;
+		}
+
+		.hero-grid {
+			display: grid;
+			grid-template-columns: 1.2fr 0.8fr;
+			gap: 24px;
+			align-items: center;
+		}
+
+		.hero-copy {
+			position: relative;
+			padding: 28px;
+			border-radius: var(--radius);
+			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+			border: 1px solid rgba(255,255,255,0.1);
+			box-shadow: var(--shadow);
+			overflow: hidden;
+		}
+
+		.hero-copy::before {
+			content: "";
+			position: absolute;
+			inset: -2px;
+			background: radial-gradient(circle at top right, rgba(255,123,209,0.23), transparent 30%),
+									radial-gradient(circle at bottom left, rgba(246,210,107,0.18), transparent 32%);
+			pointer-events: none;
+		}
+
+		.eyebrow {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 14px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.06);
+			border: 1px solid rgba(255,255,255,0.08);
+			color: rgba(255,255,255,0.82);
+			text-transform: uppercase;
+			letter-spacing: 0.18em;
+			font-size: 0.72rem;
+			margin-bottom: 18px;
+		}
+
+		.eyebrow .dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, var(--pink), var(--gold));
+			box-shadow: 0 0 18px rgba(255,123,209,0.8);
+		}
+
+		.hero h1 {
+			margin: 0;
+			font-size: clamp(3.2rem, 8vw, 7.8rem);
+			line-height: 0.95;
+			letter-spacing: -0.04em;
+			text-transform: uppercase;
+			text-shadow:
+				0 0 20px rgba(255,255,255,0.08),
+				0 0 50px rgba(255,123,209,0.2),
+				0 0 80px rgba(154,107,255,0.16);
+			position: relative;
+			z-index: 1;
+		}
+
+		.hero h1 .glow {
+			display: inline-block;
+			background: linear-gradient(135deg, #fff, #ffd9f2 28%, #f6d26b 64%, #ffffff 100%);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+			filter: drop-shadow(0 0 18px rgba(255,255,255,0.18));
+		}
+
+		.hero p {
+			color: var(--muted);
+			font-size: clamp(1.02rem, 2vw, 1.2rem);
+			line-height: 1.7;
+			max-width: 60ch;
+			position: relative;
+			z-index: 1;
+		}
+
+		.hero-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-top: 24px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, rgba(255,123,209,0.95), rgba(154,107,255,0.95) 60%, rgba(246,210,107,0.92));
+			color: #130f1d;
+			border-color: transparent;
+			font-weight: 700;
+			box-shadow: 0 18px 50px rgba(154,107,255,0.28);
+		}
+
+		.btn-primary:hover {
+			box-shadow: 0 22px 58px rgba(154,107,255,0.38);
+		}
+
+		.hero-side {
+			display: grid;
+			gap: 16px;
+		}
+
+		.stat-card,
+		.panel {
+			border-radius: var(--radius);
+			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+			border: 1px solid rgba(255,255,255,0.1);
+			box-shadow: var(--shadow);
+			backdrop-filter: blur(16px);
+			overflow: hidden;
+		}
+
+		.stat-card {
+			padding: 20px;
+			position: relative;
+		}
+
+		.stat-card::after {
+			content: "";
+			position: absolute;
+			inset: auto -20% -50% auto;
+			width: 220px;
+			height: 220px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(255,123,209,0.36), transparent 68%);
+			filter: blur(10px);
+		}
+
+		.stat-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+			margin-bottom: 14px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.stat-label {
+			color: rgba(255,255,255,0.72);
+			font-size: 0.84rem;
+			text-transform: uppercase;
+			letter-spacing: 0.14em;
+		}
+
+		.stat-value {
+			font-size: clamp(2rem, 4vw, 3rem);
+			font-weight: 800;
+			letter-spacing: -0.04em;
+			line-height: 1;
+			position: relative;
+			z-index: 1;
+		}
+
+		.meter {
+			margin-top: 14px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.meter-head {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			color: rgba(255,255,255,0.7);
+			font-size: 0.9rem;
+			margin-bottom: 8px;
+		}
+
+		.meter-bar {
+			height: 12px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.06);
+			overflow: hidden;
+			border: 1px solid rgba(255,255,255,0.08);
+		}
+
+		.meter-bar span {
+			display: block;
+			height: 100%;
+			border-radius: inherit;
+			background: linear-gradient(90deg, var(--cyan), var(--pink), var(--gold));
+			box-shadow: 0 0 24px rgba(255,123,209,0.35);
+			width: 50%;
+			transition: width 0.6s ease;
+		}
+
+		.quote-ribbon {
+			margin-top: 16px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.quote-chip {
+			padding: 10px 12px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.06);
+			border: 1px solid rgba(255,255,255,0.08);
+			color: rgba(255,255,255,0.84);
+			font-size: 0.88rem;
+		}
+
+		.section {
+			margin-top: 24px;
+			padding: 24px;
+			border-radius: var(--radius);
+			background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+			border: 1px solid rgba(255,255,255,0.1);
+			box-shadow: var(--shadow);
+			backdrop-filter: blur(16px);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.section-title {
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+			gap: 16px;
+			margin-bottom: 20px;
+			flex-wrap: wrap;
+		}
+
+		.section-title h2 {
+			margin: 0;
+			font-size: clamp(1.6rem, 3vw, 2.4rem);
+			letter-spacing: -0.03em;
+		}
+
+		.section-title p {
+			margin: 0;
+			color: var(--muted);
+			max-width: 62ch;
+			line-height: 1.6;
+		}
+
+		.fun-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 16px;
+		}
+
+		.fun-card {
+			padding: 18px;
+			border-radius: 22px;
+			background: rgba(255,255,255,0.05);
+			border: 1px solid rgba(255,255,255,0.08);
+			min-height: 160px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			position: relative;
+			overflow: hidden;
+			transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+		}
+
+		.fun-card:hover {
+			transform: translateY(-4px) rotate(-0.15deg);
+			border-color: rgba(246,210,107,0.32);
+			background: rgba(255,255,255,0.08);
+		}
+
+		.fun-card::before {
+			content: attr(data-tag);
+			position: absolute;
+			top: 14px;
+			right: 14px;
+			font-size: 0.72rem;
+			text-transform: uppercase;
+			letter-spacing: 0.18em;
+			color: rgba(255,255,255,0.55);
+		}
+
+		.fun-card strong {
+			font-size: 1.1rem;
+			margin-bottom: 10px;
+		}
+
+		.fun-card p {
+			margin: 0;
+			color: rgba(255,255,255,0.72);
+			line-height: 1.6;
+		}
+
+		.gallery {
+			display: grid;
+			grid-template-columns: repeat(12, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.memory {
+			min-height: 170px;
+			border-radius: 22px;
+			padding: 16px;
+			border: 1px solid rgba(255,255,255,0.08);
+			background:
+				linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)),
+				radial-gradient(circle at top right, rgba(255,123,209,0.28), transparent 26%),
+				radial-gradient(circle at bottom left, rgba(154,107,255,0.24), transparent 26%);
+			position: relative;
+			overflow: hidden;
+			box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+			transition: transform 0.25s ease, box-shadow 0.25s ease;
+		}
+
+		.memory:hover {
+			transform: translateY(-5px) scale(1.01);
+			box-shadow: 0 22px 58px rgba(0,0,0,0.34);
+		}
+
+		.memory::after {
+			content: "";
+			position: absolute;
+			inset: auto -12% -45% auto;
+			width: 180px;
+			height: 180px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(246,210,107,0.2), transparent 70%);
+			filter: blur(8px);
+		}
+
+		.memory .tag {
+			display: inline-block;
+			padding: 7px 10px;
+			border-radius: 999px;
+			background: rgba(0,0,0,0.24);
+			border: 1px solid rgba(255,255,255,0.08);
+			font-size: 0.78rem;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			margin-bottom: 14px;
+		}
+
+		.memory h3 {
+			margin: 0 0 8px;
+			font-size: 1.15rem;
+		}
+
+		.memory p {
+			margin: 0;
+			color: rgba(255,255,255,0.76);
+			line-height: 1.55;
+		}
+
+		.span-7 { grid-column: span 7; }
+		.span-5 { grid-column: span 5; }
+		.span-4 { grid-column: span 4; }
+		.span-6 { grid-column: span 6; }
+
+		.bottom-layout {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 18px;
+			margin-top: 24px;
+		}
+
+		.mini-log {
+			display: grid;
+			gap: 12px;
+		}
+
+		.log-item {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			padding: 14px 16px;
+			border-radius: 18px;
+			background: rgba(255,255,255,0.05);
+			border: 1px solid rgba(255,255,255,0.08);
+		}
+
+		.log-dot {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, var(--cyan), var(--pink));
+			box-shadow: 0 0 18px rgba(121,244,255,0.7);
+			flex: 0 0 auto;
+		}
+
+		.log-item span {
+			color: rgba(255,255,255,0.75);
+		}
+
+		.surprise-box {
+			padding: 22px;
+			border-radius: 22px;
+			background: linear-gradient(135deg, rgba(255,123,209,0.14), rgba(154,107,255,0.14), rgba(246,210,107,0.12));
+			border: 1px solid rgba(255,255,255,0.12);
+		}
+
+		.surprise-box p {
+			margin-top: 0;
+			color: rgba(255,255,255,0.82);
+			line-height: 1.7;
+		}
+
+		.toast {
+			position: fixed;
+			left: 50%;
+			bottom: 22px;
+			transform: translateX(-50%) translateY(30px);
+			opacity: 0;
+			z-index: 60;
+			padding: 14px 18px;
+			border-radius: 999px;
+			background: rgba(10,10,16,0.86);
+			border: 1px solid rgba(255,255,255,0.12);
+			color: white;
+			box-shadow: 0 18px 48px rgba(0,0,0,0.38);
+			transition: opacity 0.35s ease, transform 0.35s ease;
+			max-width: min(92vw, 740px);
+			text-align: center;
+			backdrop-filter: blur(14px);
+		}
+
+		.toast.show {
+			opacity: 1;
+			transform: translateX(-50%) translateY(0);
+		}
+
+		.floating-badge {
+			position: fixed;
+			inset: auto 18px 18px auto;
+			z-index: 24;
+			display: grid;
+			gap: 10px;
+			width: min(240px, calc(100vw - 36px));
+		}
+
+		.floating-badge .mini {
+			padding: 12px 14px;
+			border-radius: 16px;
+			background: rgba(8,8,14,0.72);
+			border: 1px solid rgba(255,255,255,0.1);
+			color: rgba(255,255,255,0.82);
+			box-shadow: 0 14px 36px rgba(0,0,0,0.3);
+			backdrop-filter: blur(14px);
+			animation: floaty 4.5s ease-in-out infinite;
+		}
+
+		.floating-badge .mini:nth-child(2) { animation-delay: 0.45s; }
+
+		@keyframes floaty {
+			0%, 100% { transform: translateY(0px); }
+			50% { transform: translateY(-8px); }
+		}
+
+		@keyframes introPulse {
+			from { transform: scale(1) rotate(0deg); opacity: 0.75; }
+			to { transform: scale(1.08) rotate(2deg); opacity: 1; }
+		}
+
+		@keyframes introSweep {
+			from { transform: translateX(-18%) rotate(0deg); }
+			to { transform: translateX(18%) rotate(4deg); }
+		}
+
+		@media (max-width: 980px) {
+			.hero-grid,
+			.bottom-layout {
+				grid-template-columns: 1fr;
+			}
+
+			.fun-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			.span-7, .span-5, .span-4, .span-6 { grid-column: span 6; }
+		}
+
+		@media (max-width: 700px) {
+			.intro-content {
+				width: min(96vw, 420px);
+				padding: 8px;
+			}
+
+			.intro-video,
+			.intro-overlay {
+				border-radius: 20px;
+			}
+
+			.intro-video {
+				max-width: min(96vw, 420px);
+				max-height: min(46vh, 420px);
+				transform: translateY(-4px) scale(1);
+			}
+
+			.intro-overlay {
+				padding: 6px 10px 0;
+			}
+
+			.intro-copy {
+				padding: 12px 14px;
+			}
+
+			.intro-title {
+				font-size: clamp(1.7rem, 10vw, 3rem);
+			}
+
+			.intro-subtitle {
+				font-size: 0.85rem;
+			}
+
+			.topbar {
+				padding: 12px;
+			}
+
+			.topbar-inner {
+				justify-content: center;
+			}
+
+			main {
+				width: min(100% - 20px, 1180px);
+			}
+
+			.hero {
+				min-height: auto;
+				padding-top: 18px;
+			}
+
+			.hero-copy,
+			.section {
+				padding: 18px;
+			}
+
+			.fun-grid,
+			.gallery {
+				grid-template-columns: 1fr;
+			}
+
+			.span-7, .span-5, .span-4, .span-6 { grid-column: span 1; }
+
+			.intro-copy {
+				margin: 0 14px;
+			}
+
+			.floating-badge {
+				inset: auto 12px 12px 12px;
+				width: auto;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after {
+				animation-duration: 0.001ms !important;
+				animation-iteration-count: 1 !important;
+				transition-duration: 0.001ms !important;
+				scroll-behavior: auto !important;
+			}
+		}
+	</style>
+</head>
+<body>
+	<canvas id="fxCanvas"></canvas>
+	<canvas id="confettiCanvas"></canvas>
+
+	<section class="intro" id="intro">
+		<div class="intro-content">
+			<video class="intro-video" id="introVideo" autoplay muted playsinline preload="auto" aria-label="Video de introducción">
+				<source src="fcj.mp4" type="video/mp4" />
+			</video>
+			<div class="intro-overlay">
+				<button class="intro-skip" id="skipIntro">Saltar intro</button>
+				<div class="intro-copy">
+					<div class="intro-kicker">Celebración cinematográfica</div>
+					<h1 class="intro-title">Happy 21<br />Queen Edition</h1>
+					<p class="intro-subtitle">Porque sobrevivir 21 años con estilo merece entrada triunfal, confeti dramático y una cantidad ligeramente absurda de glow.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<div class="app" id="app">
+		<header class="topbar">
+			<div class="topbar-inner">
+				<div class="brand">
+					<div class="brand-mark">21</div>
+					<div>
+						<div>Feliz Cumpleaños</div>
+						<small style="color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.06em;">VIP chaos department</small>
+					</div>
+				</div>
+				<div class="controls">
+					<button class="pill" id="musicToggle">Activar música</button>
+					<button class="pill" id="soundToggle">Sonidos: ON</button>
+					<button class="pill" id="confettiToggle">Modo confeti</button>
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero">
+				<div class="hero-grid">
+					<div class="hero-copy">
+						<div class="eyebrow"><span class="dot"></span> edición limitada del 2005</div>
+						<h1><span class="glow">Feliz Cumpleaños</span><br />21 veces más icónica</h1>
+						<p>
+							Hoy se celebra una década larga de carisma, paciencia mítica y decisiones que probablemente merecen soundtrack propio.
+							Este homenaje está diseñado para una mujer que convirtió sobrevivir en una forma de arte y el dramatismo en lujo.
+						</p>
+						<div class="hero-actions">
+							<button class="btn btn-primary" id="surpriseBtn">Disparar sorpresa</button>
+							<button class="btn" id="quoteBtn">Quiero otra frase</button>
+							<a class="btn" href="#recuerdos">Ver recuerdos falsamente gloriosos</a>
+						</div>
+						<div class="quote-ribbon" id="quoteRibbon">
+							<span class="quote-chip">21 años desbloqueados exitosamente</span>
+							<span class="quote-chip">Belleza 10/10, estabilidad emocional en beta</span>
+							<span class="quote-chip">Nivel de paciencia: legendario</span>
+						</div>
+					</div>
+
+					<div class="hero-side">
+						<div class="stat-card">
+							<div class="stat-top">
+								<div class="stat-label">contador de supervivencia</div>
+								<div class="quote-chip">premium chaos</div>
+							</div>
+							<div class="stat-value" id="ageYears">21 años</div>
+							<div class="stat-value" style="font-size:clamp(1.2rem,3vw,2rem);opacity:0.82;margin-top:8px;" id="timeStats">7665 días · 183960 horas sobreviviendo</div>
+							<div class="meter">
+								<div class="meter-head">
+									<span>Nivel de drama</span>
+									<span id="dramaLevelText">87/100</span>
+								</div>
+								<div class="meter-bar"><span id="dramaBar" style="width:87%"></span></div>
+							</div>
+							<div class="meter">
+								<div class="meter-head">
+									<span>Peligro por mensajes a las 2am</span>
+									<span id="midnightText">94/100</span>
+								</div>
+								<div class="meter-bar"><span id="midnightBar" style="width:94%"></span></div>
+							</div>
+						</div>
+
+						<div class="stat-card">
+							<div class="stat-top">
+								<div class="stat-label">logros desbloqueados</div>
+								<div class="quote-chip">achievement pack</div>
+							</div>
+							<div class="mini-log">
+								<div class="log-item"><span class="log-dot"></span><span>Sobrevivió a tareas, estrés y gente intensa</span></div>
+								<div class="log-item"><span class="log-dot"></span><span>Expert mode en sarcasmo elegante</span></div>
+								<div class="log-item"><span class="log-dot"></span><span>Legalmente experta en tomar malas decisiones</span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="section">
+				<div class="section-title">
+					<div>
+						<h2>Mensaje emotivo pero con actitud</h2>
+						<p>La misión de hoy es simple: celebrar que llegaste a los 21 con un nivel de glow que debería ser patrimonio emocional.</p>
+					</div>
+					<button class="pill" id="randomToastBtn">Mensaje aleatorio</button>
+				</div>
+				<div class="fun-grid">
+					<article class="fun-card" data-tag="meme premium">
+						<strong>21 años desbloqueados exitosamente</strong>
+						<p>El sistema confirmó que completaste la campaña principal y aún sigues en dificultad legendaria.</p>
+					</article>
+					<article class="fun-card" data-tag="romance caótico">
+						<strong>Ahora legalmente experta en tomar malas decisiones</strong>
+						<p>Pero con estilazo. Que quede claro: cualquier error futuro será con presentación elegante.</p>
+					</article>
+					<article class="fun-card" data-tag="energía vip">
+						<strong>Belleza 10/10, estabilidad emocional en beta</strong>
+						<p>El equilibrio perfecto entre glamour, caos sutil y una capacidad sospechosa de improvisar.</p>
+					</article>
+				</div>
+			</section>
+
+			<section class="section" id="recuerdos">
+				<div class="section-title">
+					<div>
+						<h2>Galería de recuerdos inventados con mucha confianza</h2>
+						<p>Un museo interactivo de momentos gloriosos, fotos que no existen todavía y una estética de fiesta de alta costura.</p>
+					</div>
+				</div>
+				<div class="gallery">
+					<article class="memory span-7">
+						<span class="tag">recuerdo 01</span>
+						<h3>La primera toma épica</h3>
+						<p>Una foto imaginaria donde ya se veía que la protagonista venía con presupuesto visual de portada, aura de reina y capacidad de eclipsar cualquier salón.</p>
+					</article>
+					<article class="memory span-5">
+						<span class="tag">recuerdo 02</span>
+						<h3>La sonrisa que arruinó la objetividad</h3>
+						<p>Los testigos reportan brillo excesivo, cero humildad visual y una vibra tan poderosa que el confeti pidió autógrafo.</p>
+					</article>
+					<article class="memory span-4">
+						<span class="tag">recuerdo 03</span>
+						<h3>Edición limitada del 2005</h3>
+						<p>Solo una unidad disponible. Estado: icónica. Probabilidad de repetición: imposible.</p>
+					</article>
+					<article class="memory span-4">
+						<span class="tag">recuerdo 04</span>
+						<h3>Glitch bonito del universo</h3>
+						<p>Un pequeño error cósmico produjo una mujer demasiado elegante para el resto del sistema.</p>
+					</article>
+					<article class="memory span-4">
+						<span class="tag">recuerdo 05</span>
+						<h3>Modo VIP activado</h3>
+						<p>Cuando entra al lugar, la iluminación mejora sola. Eso no es casualidad; es influencia ambiental.</p>
+					</article>
+				</div>
+			</section>
+
+			<div class="bottom-layout">
+				<section class="section">
+					<div class="section-title">
+						<div>
+							<h2>Detector ficticio de drama</h2>
+							<p>Una interfaz científica absolutamente seria que confirma si hoy toca reír, posar o fingir que no hubo caos.</p>
+						</div>
+					</div>
+					<div class="surprise-box">
+						<p id="dramaParagraph">Nivel actual de drama: 87/100. Resultado oficial: demasiado fino para discutir, demasiado fabuloso para perder.</p>
+						<div class="hero-actions">
+							<button class="btn btn-primary" id="dramaBtn">Recalcular drama</button>
+							<button class="btn" id="memesBtn">Más absurdidad</button>
+						</div>
+					</div>
+				</section>
+
+				<section class="section">
+					<div class="section-title">
+						<div>
+							<h2>Registro de mensajes a las 2am</h2>
+							<p>Advertencia: este panel detecta intención impulsiva, nostalgia y decisiones que luego se narran como anécdota.</p>
+						</div>
+					</div>
+					<div class="surprise-box">
+						<p>Probabilidad de enviar un texto con demasiado entusiasmo: <strong id="nightRisk">94%</strong>.</p>
+						<p>Estado recomendado: bloquear el teclado, beber agua y recordar tu valor.</p>
+						<div class="hero-actions">
+							<button class="btn btn-primary" id="nightBtn">Subir riesgo</button>
+							<button class="btn" id="glowBtn">Aumentar glow</button>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<section class="section">
+				<div class="section-title">
+					<div>
+						<h2>Botón sorpresa de celebración épica</h2>
+						<p>Cuando quieras más confeti, más frases y más caos precioso, presiona el botón. El sistema responderá con dramatismo elegante.</p>
+					</div>
+				</div>
+				<div class="hero-actions">
+					<button class="btn btn-primary" id="bigBlast">Explosión de confeti</button>
+					<button class="btn" id="quoteStorm">Lluvia de frases</button>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<div class="floating-badge" aria-hidden="true">
+		<div class="mini">21 años · versión deluxe</div>
+		<div class="mini">Peligro de mensaje a las 2am: alto</div>
+	</div>
+
+	<div class="toast" id="toast">Listo.</div>
+
+	<script>
+		const intro = document.getElementById('intro');
+		const introVideo = document.getElementById('introVideo');
+		const skipIntro = document.getElementById('skipIntro');
+		const toast = document.getElementById('toast');
+		const app = document.body;
+
+		const quoteRibbon = document.getElementById('quoteRibbon');
+		const ageYears = document.getElementById('ageYears');
+		const timeStats = document.getElementById('timeStats');
+		const dramaLevelText = document.getElementById('dramaLevelText');
+		const dramaBar = document.getElementById('dramaBar');
+		const midnightText = document.getElementById('midnightText');
+		const midnightBar = document.getElementById('midnightBar');
+		const dramaParagraph = document.getElementById('dramaParagraph');
+		const nightRisk = document.getElementById('nightRisk');
+
+		const quoteBtn = document.getElementById('quoteBtn');
+		const randomToastBtn = document.getElementById('randomToastBtn');
+		const surpriseBtn = document.getElementById('surpriseBtn');
+		const dramaBtn = document.getElementById('dramaBtn');
+		const memesBtn = document.getElementById('memesBtn');
+		const nightBtn = document.getElementById('nightBtn');
+		const glowBtn = document.getElementById('glowBtn');
+		const bigBlast = document.getElementById('bigBlast');
+		const quoteStorm = document.getElementById('quoteStorm');
+		const confettiToggle = document.getElementById('confettiToggle');
+		const musicToggle = document.getElementById('musicToggle');
+		const soundToggle = document.getElementById('soundToggle');
+
+		const fxCanvas = document.getElementById('fxCanvas');
+		const fxCtx = fxCanvas.getContext('2d');
+		const confettiCanvas = document.getElementById('confettiCanvas');
+		const confettiCtx = confettiCanvas.getContext('2d');
+
+		const quotes = [
+			'21 años desbloqueados exitosamente',
+			'Nivel de paciencia: legendario',
+			'Sobrevivió a tareas, estrés y gente intensa',
+			'Ahora legalmente experta en tomar malas decisiones',
+			'Edición limitada del 2005',
+			'Belleza 10/10, estabilidad emocional en beta',
+			'Aura premium, caos perfectamente coreografiado',
+			'La corona no se compra, se sobrevive',
+			'Demasiado elegante para discutir con el destino',
+			'Un monumento vivo al glamour y la improvisación'
+		];
+
+		const dramaLines = [
+			'Nivel actual de drama: 87/100. Resultado oficial: demasiado fino para discutir, demasiado fabuloso para perder.',
+			'Nivel actual de drama: 93/100. El sistema detectó una entrada triunfal incluso al caminar por el pasillo.',
+			'Nivel actual de drama: 76/100. Hoy se permite mirar por encima del hombro con elegancia editorial.',
+			'Nivel actual de drama: 99/100. Se recomienda confeti, espejo y una playlist de victoria.',
+			'Nivel actual de drama: 88/100. En condiciones normales esto sería mucho, pero aquí se considera branding personal.'
+		];
+
+		const toastLines = [
+			'Tu energía hoy tiene presupuesto de gala y licencia para desbordarse.',
+			'Si la elegancia fuera ilegal, hoy habría una investigación en curso.',
+			'La edad dice 21, la presencia dice evento principal.',
+			'Las malas decisiones se ven menos malas cuando hay buen outfit y confeti.',
+			'Te queda ridículamente bien sobrevivir y seguir brillando.'
+		];
+
+		const ambientSpark = [
+			'Glow activado.',
+			'Confeti autorizado por el departamento de caos.',
+			'La reina ha ingresado al sistema.',
+			'Nivel de glamour: incómodamente alto.',
+			'Protocolo de celebración premium iniciado.'
+		];
+
+		let soundEnabled = true;
+		let confettiEnabled = true;
+		let appReady = false;
+		let musicActive = false;
+		let audioCtx;
+		let synthNodes = [];
+		let particles = [];
+		let confetti = [];
+		let stars = [];
+		let floatMessages = [];
+		let glowBoost = 0;
+
+		function resizeCanvas() {
+			const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+			[fxCanvas, confettiCanvas].forEach((canvas) => {
+				canvas.width = Math.floor(window.innerWidth * dpr);
+				canvas.height = Math.floor(window.innerHeight * dpr);
+				canvas.style.width = window.innerWidth + 'px';
+				canvas.style.height = window.innerHeight + 'px';
+			});
+			fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			initStars();
+		}
+
+		function initStars() {
+			stars = Array.from({ length: Math.round(window.innerWidth / 18) }, () => ({
+				x: Math.random() * window.innerWidth,
+				y: Math.random() * window.innerHeight,
+				r: Math.random() * 1.6 + 0.3,
+				a: Math.random(),
+				s: Math.random() * 0.24 + 0.06,
+				hue: Math.random() > 0.7 ? 300 : Math.random() > 0.5 ? 46 : 190
+			}));
+		}
+
+		function showToast(message, duration = 2600) {
+			toast.textContent = message;
+			toast.classList.add('show');
+			clearTimeout(showToast.timer);
+			showToast.timer = setTimeout(() => toast.classList.remove('show'), duration);
+		}
+
+		function pick(array) {
+			return array[Math.floor(Math.random() * array.length)];
+		}
+
+		function updateFakeStats() {
+			const days = 7665;
+			const hours = 183960;
+			ageYears.textContent = '21 años';
+			timeStats.textContent = `${days} días · ${hours} horas sobreviviendo`;
+			const drama = 72 + Math.floor(Math.random() * 28);
+			const midnight = 78 + Math.floor(Math.random() * 22);
+			dramaLevelText.textContent = `${drama}/100`;
+			midnightText.textContent = `${midnight}/100`;
+			dramaBar.style.width = drama + '%';
+			midnightBar.style.width = midnight + '%';
+			nightRisk.textContent = midnight + '%';
+			if (glowBoost > 0) {
+				glowBoost -= 1;
+			}
+		}
+
+		function burstConfetti(amount = 90) {
+			if (!confettiEnabled) return;
+			const colors = ['#ff7bd1', '#9a6bff', '#f6d26b', '#79f4ff', '#ffffff'];
+			for (let i = 0; i < amount; i++) {
+				confetti.push({
+					x: Math.random() * window.innerWidth,
+					y: -20 - Math.random() * 200,
+					vx: (Math.random() - 0.5) * 6,
+					vy: Math.random() * 4 + 3,
+					g: 0.08 + Math.random() * 0.05,
+					size: Math.random() * 7 + 4,
+					rot: Math.random() * Math.PI,
+					vr: (Math.random() - 0.5) * 0.2,
+					color: pick(colors),
+					life: 220 + Math.random() * 140,
+					shape: Math.random() > 0.6 ? 'star' : 'rect'
+				});
+			}
+		}
+
+		function spawnFloatingMessage(text) {
+			floatMessages.push({
+				text,
+				x: Math.random() * (window.innerWidth * 0.6) + window.innerWidth * 0.2,
+				y: window.innerHeight * 0.72 + Math.random() * 60,
+				vx: (Math.random() - 0.5) * 0.35,
+				vy: -0.55 - Math.random() * 0.45,
+				alpha: 1,
+				life: 220,
+				scale: 0.86 + Math.random() * 0.4
+			});
+		}
+
+		function renderBackground() {
+			fxCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+			confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+			const gradientGlow = fxCtx.createRadialGradient(window.innerWidth * 0.5, window.innerHeight * 0.2, 0, window.innerWidth * 0.5, window.innerHeight * 0.2, Math.max(window.innerWidth, window.innerHeight) * 0.62);
+			gradientGlow.addColorStop(0, `rgba(255, 123, 209, ${0.15 + glowBoost * 0.02})`);
+			gradientGlow.addColorStop(0.45, `rgba(154, 107, 255, ${0.09 + glowBoost * 0.015})`);
+			gradientGlow.addColorStop(1, 'rgba(0,0,0,0)');
+			fxCtx.fillStyle = gradientGlow;
+			fxCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+			stars.forEach((star) => {
+				star.a += star.s;
+				const alpha = 0.35 + Math.sin(star.a) * 0.38;
+				fxCtx.beginPath();
+				fxCtx.fillStyle = `hsla(${star.hue}, 100%, 78%, ${alpha})`;
+				fxCtx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+				fxCtx.fill();
+				star.y += 0.08 + star.r * 0.02;
+				if (star.y > window.innerHeight + 8) {
+					star.y = -8;
+					star.x = Math.random() * window.innerWidth;
+				}
+			});
+
+			particles.forEach((p, index) => {
+				p.x += p.vx;
+				p.y += p.vy;
+				p.vx *= 0.995;
+				p.vy *= 0.995;
+				p.alpha -= 0.004;
+				p.life -= 1;
+				fxCtx.fillStyle = `rgba(${p.r}, ${p.g}, ${p.b}, ${Math.max(p.alpha, 0)})`;
+				fxCtx.beginPath();
+				fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+				fxCtx.fill();
+				if (p.life <= 0 || p.alpha <= 0) particles.splice(index, 1);
+			});
+
+			if (confettiEnabled) {
+				confetti.forEach((c, index) => {
+					c.vy += c.g;
+					c.x += c.vx;
+					c.y += c.vy;
+					c.rot += c.vr;
+					c.life -= 1;
+					confettiCtx.save();
+					confettiCtx.translate(c.x, c.y);
+					confettiCtx.rotate(c.rot);
+					confettiCtx.globalAlpha = Math.max(c.life / 260, 0);
+					confettiCtx.fillStyle = c.color;
+					if (c.shape === 'star') {
+						drawStar(confettiCtx, 0, 0, 5, c.size * 0.35, c.size * 0.75);
+					} else {
+						confettiCtx.fillRect(-c.size * 0.5, -c.size * 0.2, c.size, c.size * 0.4);
+					}
+					confettiCtx.restore();
+					if (c.y > window.innerHeight + 40 || c.life <= 0) confetti.splice(index, 1);
+				});
+			}
+
+			floatMessages.forEach((item, index) => {
+				item.x += item.vx;
+				item.y += item.vy;
+				item.alpha -= 0.0045;
+				item.life -= 1;
+				confettiCtx.save();
+				confettiCtx.globalAlpha = Math.max(item.alpha, 0);
+				confettiCtx.fillStyle = 'rgba(255,255,255,0.96)';
+				confettiCtx.font = `${Math.round(16 * item.scale)}px Segoe UI, sans-serif`;
+				confettiCtx.textAlign = 'center';
+				confettiCtx.shadowColor = 'rgba(255,123,209,0.42)';
+				confettiCtx.shadowBlur = 18;
+				confettiCtx.fillText(item.text, item.x, item.y);
+				confettiCtx.restore();
+				if (item.life <= 0 || item.alpha <= 0) floatMessages.splice(index, 1);
+			});
+
+			requestAnimationFrame(renderBackground);
+		}
+
+		function drawStar(ctx, x, y, spikes, outerRadius, innerRadius) {
+			let rotation = Math.PI / 2 * 3;
+			let step = Math.PI / spikes;
+			ctx.beginPath();
+			ctx.moveTo(x, y - outerRadius);
+			for (let i = 0; i < spikes; i++) {
+				ctx.lineTo(x + Math.cos(rotation) * outerRadius, y + Math.sin(rotation) * outerRadius);
+				rotation += step;
+				ctx.lineTo(x + Math.cos(rotation) * innerRadius, y + Math.sin(rotation) * innerRadius);
+				rotation += step;
+			}
+			ctx.lineTo(x, y - outerRadius);
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		function playSoftPop() {
+			if (!soundEnabled) return;
+			if (!audioCtx) return;
+			const now = audioCtx.currentTime;
+			const osc = audioCtx.createOscillator();
+			const gain = audioCtx.createGain();
+			osc.type = 'triangle';
+			osc.frequency.setValueAtTime(920, now);
+			osc.frequency.exponentialRampToValueAtTime(240, now + 0.14);
+			gain.gain.setValueAtTime(0.0001, now);
+			gain.gain.exponentialRampToValueAtTime(0.18, now + 0.03);
+			gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+			osc.connect(gain).connect(audioCtx.destination);
+			osc.start(now);
+			osc.stop(now + 0.18);
+		}
+
+		function startAmbientMusic() {
+			if (musicActive) return;
+			const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+			if (!AudioContextCtor) {
+				showToast('Tu navegador no admite música generada, así que el glamour tocará en silencio.');
+				return;
+			}
+			audioCtx = audioCtx || new AudioContextCtor();
+			audioCtx.resume?.();
+			const master = audioCtx.createGain();
+			master.gain.value = 0.045;
+			master.connect(audioCtx.destination);
+
+			const chord = [220, 277.18, 329.63, 440];
+			synthNodes = chord.map((freq, index) => {
+				const osc = audioCtx.createOscillator();
+				const gain = audioCtx.createGain();
+				osc.type = index % 2 ? 'sine' : 'triangle';
+				osc.frequency.value = freq;
+				gain.gain.value = 0.0001;
+				osc.connect(gain).connect(master);
+				osc.start();
+				return { osc, gain };
+			});
+
+			musicActive = true;
+			const breathe = () => {
+				if (!musicActive || !audioCtx) return;
+				const now = audioCtx.currentTime;
+				synthNodes.forEach((node, index) => {
+					const target = 0.018 + index * 0.003;
+					node.gain.gain.cancelScheduledValues(now);
+					node.gain.gain.setTargetAtTime(target, now, 0.9 + index * 0.25);
+				});
+				setTimeout(breathe, 2200);
+			};
+			breathe();
+
+			musicToggle.textContent = 'Desactivar música';
+			showToast('Música ambiente premium activada.');
+		}
+
+		function stopAmbientMusic() {
+			if (!musicActive) return;
+			synthNodes.forEach((node) => {
+				try {
+					node.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+					node.gain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.18);
+					node.osc.stop(audioCtx.currentTime + 0.25);
+				} catch (_) {}
+			});
+			synthNodes = [];
+			musicActive = false;
+			musicToggle.textContent = 'Activar música';
+			showToast('Música ambiente pausada.');
+		}
+
+		function finishIntro() {
+			if (appReady) return;
+			appReady = true;
+			document.body.classList.add('ready');
+			intro.classList.add('is-hidden');
+			setTimeout(() => intro.remove(), 1200);
+			burstConfetti(160);
+			showToast('Bienvenida triunfal activada.');
+			playSoftPop();
+		}
+
+		function nextQuote() {
+			const quote = pick(quotes);
+			const chip = document.createElement('span');
+			chip.className = 'quote-chip';
+			chip.textContent = quote;
+			quoteRibbon.appendChild(chip);
+			while (quoteRibbon.children.length > 4) quoteRibbon.removeChild(quoteRibbon.firstElementChild);
+			showToast(quote);
+			burstConfetti(24);
+			spawnFloatingMessage(quote);
+			playSoftPop();
+		}
+
+		function randomAbsurdity() {
+			const message = pick(toastLines);
+			showToast(message, 3200);
+			burstConfetti(36);
+			spawnFloatingMessage(message);
+			playSoftPop();
+		}
+
+		function updateDrama() {
+			const line = pick(dramaLines);
+			dramaParagraph.textContent = line;
+			const drama = 70 + Math.floor(Math.random() * 30);
+			dramaLevelText.textContent = `${drama}/100`;
+			dramaBar.style.width = drama + '%';
+			showToast('Drama recálculado con precisión cuestionablemente científica.');
+			burstConfetti(30);
+			playSoftPop();
+		}
+
+		function increaseNightRisk() {
+			const value = Math.min(100, 90 + Math.floor(Math.random() * 11));
+			nightRisk.textContent = value + '%';
+			midnightText.textContent = value + '/100';
+			midnightBar.style.width = value + '%';
+			showToast('Riesgo nocturno elevado. El sistema recomienda dormir o enviar memes.');
+			burstConfetti(18);
+			playSoftPop();
+		}
+
+		function amplifyGlow() {
+			glowBoost = 12;
+			document.documentElement.style.setProperty('--gold', '#ffe07a');
+			document.documentElement.style.setProperty('--pink', '#ff8bd7');
+			showToast('Glow intensificado. La habitación ya no puede competir.');
+			burstConfetti(44);
+			spawnFloatingMessage('Glow maximizadísimo.');
+			playSoftPop();
+		}
+
+		function createParticleBurst(x, y) {
+			const palette = [
+				[255, 123, 209],
+				[154, 107, 255],
+				[246, 210, 107],
+				[121, 244, 255],
+				[255, 255, 255]
+			];
+			for (let i = 0; i < 42; i++) {
+				const color = pick(palette);
+				particles.push({
+					x,
+					y,
+					vx: (Math.random() - 0.5) * 8,
+					vy: (Math.random() - 0.5) * 8,
+					size: Math.random() * 3.8 + 1.4,
+					r: color[0],
+					g: color[1],
+					b: color[2],
+					alpha: 1,
+					life: 60 + Math.random() * 40
+				});
+			}
+		}
+
+		function celebrateAtPointer(evt) {
+			const x = evt.clientX || window.innerWidth * 0.5;
+			const y = evt.clientY || window.innerHeight * 0.35;
+			createParticleBurst(x, y);
+			burstConfetti(22);
+			if (soundEnabled) playSoftPop();
+		}
+
+		function startAutoQuotes() {
+			setInterval(() => {
+				if (!appReady) return;
+				if (Math.random() > 0.55) {
+					const message = pick(ambientSpark);
+					spawnFloatingMessage(message);
+				}
+			}, 4300);
+		}
+
+		function tryStartVideo() {
+			const fallbackTimer = setTimeout(finishIntro, 12000);
+			const onReady = () => {
+				introVideo.play().catch(() => {});
+			};
+			introVideo.addEventListener('ended', () => {
+				clearTimeout(fallbackTimer);
+				finishIntro();
+			}, { once: true });
+			introVideo.addEventListener('error', () => {
+				clearTimeout(fallbackTimer);
+				finishIntro();
+			}, { once: true });
+			introVideo.addEventListener('canplay', onReady, { once: true });
+			setTimeout(() => {
+				introVideo.play().catch(() => {});
+			}, 150);
+		}
+
+		skipIntro.addEventListener('click', finishIntro);
+		intro.addEventListener('click', (event) => {
+			if (event.target === intro) finishIntro();
+		});
+
+		quoteBtn.addEventListener('click', nextQuote);
+		randomToastBtn.addEventListener('click', randomAbsurdity);
+		surpriseBtn.addEventListener('click', () => {
+			celebrateAtPointer({ clientX: window.innerWidth * 0.52, clientY: window.innerHeight * 0.35 });
+			showToast('Sorpresa liberada: nivel de celebración industrial.');
+		});
+		dramaBtn.addEventListener('click', updateDrama);
+		memesBtn.addEventListener('click', () => {
+			const absurd = pick([
+				'El algoritmo confirmó: naciste para brillar y para que todo quede ligeramente en modo espectáculo.',
+				'Tu presencia tiene más producción que algunos premios de televisión.',
+				'Si esto fuera una serie, tú ya tendrías temporada especial y presupuesto extendido.',
+				'La combinación de elegancia y caos te quedó tan natural que parece ingeniería celestial.'
+			]);
+			showToast(absurd, 3600);
+			burstConfetti(40);
+			spawnFloatingMessage(absurd);
+		});
+		nightBtn.addEventListener('click', increaseNightRisk);
+		glowBtn.addEventListener('click', amplifyGlow);
+		bigBlast.addEventListener('click', () => {
+			burstConfetti(180);
+			showToast('Confeti a nivel estadio.');
+			playSoftPop();
+		});
+		quoteStorm.addEventListener('click', () => {
+			for (let i = 0; i < 4; i++) nextQuote();
+		});
+
+		confettiToggle.addEventListener('click', () => {
+			confettiEnabled = !confettiEnabled;
+			confettiToggle.textContent = confettiEnabled ? 'Modo confeti' : 'Confeti: OFF';
+			showToast(confettiEnabled ? 'Confeti reactivado.' : 'Confeti en pausa. El drama quedó en silencio.');
+		});
+
+		musicToggle.addEventListener('click', async () => {
+			if (!musicActive) startAmbientMusic();
+			else stopAmbientMusic();
+		});
+
+		soundToggle.addEventListener('click', () => {
+			soundEnabled = !soundEnabled;
+			soundToggle.textContent = soundEnabled ? 'Sonidos: ON' : 'Sonidos: OFF';
+			showToast(soundEnabled ? 'Efectos de sonido activados.' : 'Efectos de sonido silenciados.');
+		});
+
+		window.addEventListener('resize', resizeCanvas);
+		window.addEventListener('pointerdown', (event) => {
+			if (!appReady) return;
+			if (Math.random() > 0.6) celebrateAtPointer(event);
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (!appReady) return;
+			if (event.key.toLowerCase() === 'c') burstConfetti(80);
+			if (event.key.toLowerCase() === 'm') nextQuote();
+		});
+
+		resizeCanvas();
+		renderBackground();
+		updateFakeStats();
+		startAutoQuotes();
+		tryStartVideo();
+		setInterval(() => {
+			if (!appReady) return;
+			updateFakeStats();
+			if (Math.random() > 0.72) showToast(pick(ambientSpark), 2200);
+			if (Math.random() > 0.58) burstConfetti(14);
+		}, 5200);
+
+		setTimeout(() => {
+			if (!appReady) return;
+			showToast('Pista: presiona C para confeti y M para frase random.');
+		}, 2600);
+	</script>
+</body>
+</html>
